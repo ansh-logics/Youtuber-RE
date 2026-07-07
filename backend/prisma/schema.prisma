@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id               String   @id @default(uuid())
+  email            String   @unique
+  username         String   @unique
+  password         String
+  gender           Gender
+  firstName        String
+  lastName         String
+  dob              DateTime
+  accessToken      String   @default("")
+
+  channelName      String   @default("")
+  banner           String   @default("")
+  profilePicture   String   @default("")
+  description      String   @default("")
+
+  subscriberCount  Int      @default(0)
+  deleted          Boolean  @default(false)
+  uploads          Uploads[]
+}
+
+model Subscription {
+ id               String  @id    @default(uuid())
+ channelId        String
+ userId           String
+}
+
+model Like{
+  id String @id @default(uuid())
+  userId String
+  channelId String
+  likeCount Int
+}
+
+model Uploads {
+  id            String   @id @default(uuid())
+
+  title         String
+  description   String
+
+  slug          String   @unique
+
+  videoUrl      String
+  thumbnailUrl  String
+
+  views         Int      @default(0)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isDraft       Boolean @default(false)
+
+  userId        String
+  user          User @relation(fields: [userId], references: [id])
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}
