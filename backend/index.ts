@@ -7,9 +7,8 @@ import jwt from "jsonwebtoken";
 import path from "path";
 import cors from "cors";
 import { authMiddleware } from "./middlewares/authMiddleware.ts";
-import uploadVideo from "./lib/videoUplaod.ts";
+import uploadVideo from "./lib/videoUpload.ts";
 import imageUpload from "./lib/imageUpload.ts";
-cloudinary.config();
 const app = express();
 app.use(
     cors({
@@ -29,17 +28,6 @@ const generateToken = (id:string) =>{
         }
       );
     return token;
-}
-const cloudinaryUploader = async(path:string, type: "image" | "video")=>{
-    console.log(cloudinary.config())
-    let result = await cloudinary.uploader.upload(path,{
-        resource_type:"video" 
-    }).then((result)=>{
-        return (result.secure_url);
-       }).catch((err)=>{
-        throw new Error(err.message);
-       })
-    return result;
 }
 app.get("/", (_req, res) =>{
     res.status(200).json({
@@ -71,7 +59,7 @@ app.post("/upload/video",authMiddleware, upload.single("video"),async (req, res)
     });
 
     } catch (err: any) {
-    console.error("Direct Upload Error Log:", err);
+    console.error("Video Route Upload Error:", err);
     return res.status(500).json({
         message: "Video upload failed",
         error: err.message || err,
