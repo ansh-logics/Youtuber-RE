@@ -12,6 +12,7 @@ export default function Upload() {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [title, setTitle] = useState<string | null>(null);
   const [desc, setDesc] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   let formData = {
     title: "",
     desc: "",
@@ -28,6 +29,7 @@ export default function Upload() {
 
   const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
 
     const videoUploadData = new FormData();
 
@@ -37,19 +39,25 @@ export default function Upload() {
 
     setLoading(true);
     setFormNumber(1);
-    let token = localStorage.getItem("token");
-    let res = await axios.post(
-      "http://localhost:3001/upload/video",
-      videoUploadData,
-        {
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
-        }
-    );
+    try {
+      let token = localStorage.getItem("token");
+      let res = await axios.post(
+        "http://localhost:3001/upload/video",
+        videoUploadData,
+          {
+              headers:{
+                  Authorization:`Bearer ${token}`
+              }
+          }
+      );
 
-    setVideoUrl(res.data.url)
-    setLoading(false);
+      setVideoUrl(res.data.url);
+    } catch (err: any) {
+      setFormNumber(0);
+      setError(err.response?.data?.error || err.response?.data?.message || "Video upload failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +71,7 @@ export default function Upload() {
   const handleThumbnailChange =  async (e: React.ChangeEvent<HTMLInputElement>) =>{
     const file = e.target.files?.[0];
     if (!file) return;
+    setError(null);
     setThumbnailUpload(true);
     const thumbnailData = new FormData();
     thumbnailData.append("image", file);
@@ -81,10 +90,13 @@ export default function Upload() {
         setThumbnailPreview(res.data.url);
         setThumbnailUrl(res.data.url);
     }).catch((err)=>{
-        console.log(err);
+        setThumbnailLoading(false);
+        setThumbnailUpload(false);
+        setError(err.response?.data?.error || err.response?.data?.message || "Thumbnail upload failed");
     })
   }
   const handleUpload = async ()=>{
+    setError(null);
     createForm();
     let token = localStorage.getItem("token");
     await axios.post(
@@ -98,12 +110,26 @@ export default function Upload() {
     ).then((res)=>{
       console.log(res);
     }).catch((err)=>{
-      console.log(err);
+      setError(err.response?.data?.error || err.response?.data?.message || "Upload failed");
     });
   }
   const handleDraft = async ()=>{
     createForm();
     formData.isDraft = true;
+    let token = localStorage.getItem("token");
+    await axios.post(
+        "http://localhost:3001/upload/",
+        formData,
+        {
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
+        }
+    ).then((res)=>{
+      console.log(res);
+    }).catch((err)=>{
+      setError(err.response?.data?.error || err.response?.data?.message || "Upload failed");
+    });
   }
 
   useEffect(() => {
@@ -125,6 +151,9 @@ export default function Upload() {
               <p className="text-gray-400 mt-2">
                 Choose a video to upload.
               </p>
+              {error ? (
+                <p className="text-sm text-red-400 mt-3">{error}</p>
+              ) : null}
             </div>
   
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -173,6 +202,9 @@ export default function Upload() {
               <p className="text-gray-400 mt-2">
                 Complete the remaining details.
               </p>
+              {error ? (
+                <p className="text-sm text-red-400 mt-3">{error}</p>
+              ) : null}
             </div>
   
             <form className="space-y-5">

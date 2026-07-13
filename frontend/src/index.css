@@ -1,22 +1,105 @@
 @import "tailwindcss";
 
+@theme {
+  --font-ndot55: 'Ndot55', monospace;
+  --font-ndot57: 'Ndot57', monospace;
+  --font-ntype-headline: 'NType82-Headline', sans-serif;
+  --font-ntype: 'NType82', sans-serif;
+  --font-ntype-mono: 'NType82Mono', monospace;
+  --font-lettera: 'LetteraMono', monospace;
+  --font-lettera-medium: 'LetteraMono-Medium', monospace;
+  --font-lettera-light: 'LetteraMono-Light', monospace;
+  --font-grotesk: 'SpaceGrotesk', sans-serif;
+  --font-space-mono: 'SpaceMono', monospace;
+}
+
+@font-face {
+  font-family: 'Ndot55';
+  src: url('./assets/fonts/Ndot55-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Ndot57';
+  src: url('./assets/fonts/Ndot57-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NType82';
+  src: url('./assets/fonts/NType82-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NType82-Headline';
+  src: url('./assets/fonts/NType82-Headline.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'NType82Mono';
+  src: url('./assets/fonts/NType82Mono-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'LetteraMono';
+  src: url('./assets/fonts/LetteraMonoLL-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'LetteraMono-Medium';
+  src: url('./assets/fonts/LetteraMonoLL-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'LetteraMono-Light';
+  src: url('./assets/fonts/LetteraMonoLL-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SpaceGrotesk';
+  src: url('./assets/fonts/SpaceGrotesk-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SpaceMono';
+  src: url('./assets/fonts/SpaceMono-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
 @layer base {
   :root {
-    @apply text-[rgba(255,255,255,0.87)] bg-[#242424] font-sans;
+    @apply text-black bg-[#f6f6f6] font-sans;
   }
 
   body {
-    @apply grid place-items-center min-w-[320px] min-h-screen relative m-0;
+    @apply min-w-[320px] min-h-screen relative m-0;
+    background-color: #f6f6f6;
+    background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1.2px, transparent 1.2px);
+    background-size: 40px 40px;
+    background-position: center;
   }
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  opacity: 0.05;
-  transform: rotate(-12deg) scale(1.35);
-  animation: slide 30s linear infinite;
-  pointer-events: none;
+.nothing-dotted-bg {
+  background-color: #f6f6f6;
+  background-image: radial-gradient(rgba(0, 0, 0, 0.08) 1.2px, transparent 1.2px);
+  background-size: 40px 40px;
+  background-position: center;
 }
