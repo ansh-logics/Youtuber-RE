@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Eye, EyeClosed } from "lucide-react";
 import axios from "axios";
-
+import { useNavigate } from "react-router";
 export function Login() {
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [visible, setVisible] = useState(false);
@@ -17,15 +18,16 @@ export function Login() {
     };
 
     let data = {
-        email:email,
-        password:password
+        email: email,
+        password: password
     }
     const login = () => {
-        axios.post("http://localhost:3001/auth/login", data).then((res)=>{
+        axios.post("http://localhost:3001/auth/login", data).then((res) => {
             let resData = res.data;
             localStorage.setItem("token", resData.token)
             localStorage.setItem("username", resData.username);
-        }).catch((err)=>{
+            navigate("/");
+        }).catch((err) => {
             console.log(err);
         });
     }
@@ -39,7 +41,7 @@ export function Login() {
                     type="email"
                     name="email"
                     placeholder="enter your email"
-                    onChange={(e)=>{
+                    onChange={(e) => {
                         setEmail(e.target.value);
                     }}
                 />
@@ -50,10 +52,10 @@ export function Login() {
                 <div className="relative w-full">
                     <input
                         className="w-full rounded-[16px] border border-black/5 bg-black/[0.02] p-3 pr-11 text-black text-sm outline-none focus:border-black/20 focus:bg-black/[0.04] transition-all font-grotesk placeholder-black/30"
-                        type={visible?"text":"password"}
+                        type={visible ? "text" : "password"}
                         name="password"
                         placeholder="enter your password"
-                        onChange={(e)=>{
+                        onChange={(e) => {
                             setPassword(e.target.value);
                         }}
                         onFocus={() => {
@@ -65,18 +67,18 @@ export function Login() {
                             dispatchCatState(false, visible);
                         }}
                     />
-                    {visible == true?(
+                    {visible == true ? (
                         <Eye
                             className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-black/40 hover:text-black transition-colors"
-                            onClick={()=>{
+                            onClick={() => {
                                 setVisible(false);
                                 dispatchCatState(isPwdFocused, false);
                             }}
                         />
-                    ):(
+                    ) : (
                         <EyeClosed
                             className="absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 cursor-pointer text-black/40 hover:text-black transition-colors"
-                            onClick={()=>{
+                            onClick={() => {
                                 setVisible(true);
                                 dispatchCatState(isPwdFocused, true);
                             }}
@@ -84,7 +86,7 @@ export function Login() {
                     )}
                 </div>
             </div>
-            
+
             <button
                 onClick={login}
                 type="button"

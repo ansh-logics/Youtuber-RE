@@ -8,20 +8,27 @@ import Watch from "./pages/watch";
 import { NothingCat } from "./components/NothingCat";
 import { Navbar } from "./components/Navbar";
 import Home from "./pages/home";
+import { useEffect, useState } from "react";
+import { GuestRoute } from "./components/GuestRoute";
 function AppContent() {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const location = useLocation();
-  const showNavbar = location.pathname !== "/";
-
+  useEffect(() => {
+    setIsLoggedIn(localStorage.getItem("token") !== null);
+  }, [isLoggedIn])
+  const showNavbar = location.pathname !== "/auth";
   return (
     <>
       {showNavbar && <Navbar />}
       <Routes>
-        <Route path="/" element={<AuthPage />}></Route>
+        <Route element={<GuestRoute />}>
+          <Route path="/auth" element={<AuthPage />}></Route>
+        </Route>
         <Route path="/watch" element={<Watch />}></Route>
         <Route path="/upload" element={<Upload />}></Route>
         <Route path="/dashboard" element={<Dashboard />}></Route>
         <Route path="/profile" element={<Profile />}></Route>
-        <Route path="/home" element={<Home></Home>}></Route>
+        <Route path="/" element={<Home></Home>}></Route>
       </Routes>
       <NothingCat />
     </>
