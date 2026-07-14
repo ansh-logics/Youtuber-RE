@@ -2,12 +2,15 @@ import { useState } from "react";
 import { Eye, EyeClosed } from "lucide-react";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import { useAuth } from "@/context/AuthContext";
+
 export function Login() {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [visible, setVisible] = useState(false);
     const [isPwdFocused, setIsPwdFocused] = useState(false);
+    const { login } = useAuth();
 
     const dispatchCatState = (focused: boolean, visibleVal: boolean) => {
         window.dispatchEvent(
@@ -21,11 +24,10 @@ export function Login() {
         email: email,
         password: password
     }
-    const login = () => {
+    const loginHandler = () => {
         axios.post("http://localhost:3001/auth/login", data).then((res) => {
             let resData = res.data;
-            localStorage.setItem("token", resData.token)
-            localStorage.setItem("username", resData.username);
+            login(resData.token, resData.username);
             navigate("/");
         }).catch((err) => {
             console.log(err);
@@ -88,7 +90,7 @@ export function Login() {
             </div>
 
             <button
-                onClick={login}
+                onClick={loginHandler}
                 type="button"
                 className="mt-4 w-full rounded-full bg-black text-white py-3.5 text-xs font-bold font-lettera uppercase tracking-widest transition-all hover:bg-black/90 active:scale-98 shadow-sm cursor-pointer"
             >

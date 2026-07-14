@@ -8,14 +8,10 @@ import Watch from "./pages/watch";
 import { NothingCat } from "./components/NothingCat";
 import { Navbar } from "./components/Navbar";
 import Home from "./pages/home";
-import { useEffect, useState } from "react";
 import { GuestRoute } from "./components/GuestRoute";
+import { AuthProvider } from "./context/AuthContext";
 function AppContent() {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const location = useLocation();
-  useEffect(() => {
-    setIsLoggedIn(localStorage.getItem("token") !== null);
-  }, [isLoggedIn])
   const showNavbar = location.pathname !== "/auth";
   return (
     <>
@@ -38,9 +34,11 @@ function AppContent() {
 export function App() {
   return (
     <div className="max-w-7xl mx-auto p-8 text-center relative z-10">
-      <BrowserRouter>
-        <AppContent />
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppContent />
+        </BrowserRouter>
+      </AuthProvider>
     </div>
   );
 }
