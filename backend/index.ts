@@ -4,7 +4,9 @@ import express, { response } from "express";
 import cors from "cors";
 import authRouter from "./routes/authRoutes.ts";
 import userRouter from "./routes/userRoutes.ts";
+import channelRouter from "./routes/channelRouter.ts";
 import videoRouter from "./routes/videoRoutes.ts";
+import videoActivityRouter from "./routes/videoActivityRouter.ts";
 const app = express();
 app.use(
     cors({
@@ -16,6 +18,8 @@ app.use(express.json());
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/video", videoRouter);
+app.use("/channel", channelRouter);
+app.use("/videoActivity", videoActivityRouter);
 
 app.get("/", (_req, res) => {
     res.status(200).json({

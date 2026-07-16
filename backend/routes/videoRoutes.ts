@@ -7,7 +7,19 @@ import { prisma } from "../db";
 
 const router = Router();
 router.post("/video", authMiddleware, upload.single("video"), async (req, res) => {
+    const userId = (req as any).user.id;
     try {
+        let channelName = await prisma.user.findUnique({
+            where: { id: userId },
+            select: {
+                channelName: true,
+            }
+        })
+        if (!channelName) {
+            return res.status(404).json({
+                message: "Your channel not found you must've a channel to upload video",
+            })
+        }
         if (!req.file) {
             return res.status(400).json({ message: "No video uploaded" });
         }

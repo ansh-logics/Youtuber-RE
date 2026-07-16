@@ -23,27 +23,23 @@ router.post("/login", async (req, res) => {
             email: email
         }
     })
-    console.log(user);
     if (!user) {
-        return res.status(404).json({
-            message: "user not found credentials are wrong"
+        return res.status(401).json({
+            message: "Invalid email or password"
         })
     }
-    let jwt_token = generateToken(user.id);
-    prisma.user.update({
-        where:
-        {
-            id: user.id
-        },
-        data: {
-            accessToken: jwt_token
-        }
-    })
-    return res.status(200).json({
-        username: user.username,
-        id: user.id,
-        token: jwt_token
-    })
+    if (await bcrypt.compare(password, user.password)) {
+
+        let jwt_token = generateToken(user.id);
+        return res.status(200).json({
+            username: user.username,
+            id: user.id,
+            token: jwt_token
+        })
+    }
+    return res.status(401).json({
+        message: "Invalid email or password"
+    });
 });
 
 router.post("/signup", async (req, res) => {
@@ -53,16 +49,15 @@ router.post("/signup", async (req, res) => {
             email: email
         }
     })
-    console.log(user)
     if (user) {
         return res.status(409).json({
             message: "User already exists use different credentials"
         })
     }
-    let jwt_token = generateToken(email);
     try {
         let hashedpass = await bcrypt.hash(password, 10);
         let createdUser = await prisma.user.create({ data: { email, username, password: hashedpass, gender, firstName, lastName, dob: new Date(dob) } });
+        let jwt_token = generateToken(createdUser.id);
         return res.status(200).json({
             message: "user has been created",
             user: {

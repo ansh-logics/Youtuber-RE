@@ -2,16 +2,15 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router";
 import axios from "axios";
 import {
-  CirclePlayDoticon,
-  CirclePauseDoticon,
-  BurgerDoticon,
-  ArrowLeftDoticon,
-  AlarmDoticon,
-  GcalendarDoticon,
-  CircleDotsDoticon,
-  VolumeDoticon
+    CirclePlayDoticon,
+    CirclePauseDoticon,
+    BurgerDoticon,
+    ArrowLeftDoticon,
+    AlarmDoticon,
+    GcalendarDoticon,
+    CircleDotsDoticon,
+    VolumeDoticon
 } from "doticons/16";
-import { DotPlayLogo } from "@/components/DotPlayLogo";
 
 export default function Watch() {
     const [searchParams] = useSearchParams();
@@ -38,7 +37,6 @@ export default function Watch() {
             setDescription(response.data.video.description);
             setViews(response.data.video.views);
             setUploadedAt(response.data.video.uploadedAt);
-            setDuration(response.data.video.duration);
         }).catch((err) => {
             console.log(err);
         })
@@ -74,7 +72,6 @@ export default function Watch() {
         setIsMuted(muted);
         videoRef.current.muted = muted;
     };
-
     const formatTime = (timeInSeconds: number) => {
         if (isNaN(timeInSeconds)) return "00:00";
         const minutes = Math.floor(timeInSeconds / 60);
@@ -86,15 +83,15 @@ export default function Watch() {
         <div className="text-left w-full max-w-6xl mx-auto flex flex-col font-grotesk min-h-[80vh] py-4">
             {/* Main Layout Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-                
+
                 {/* Left/Main Column: Player */}
                 <div className="lg:col-span-2 flex flex-col gap-4">
                     {/* Video Player Card */}
                     <div className="bg-white/40 backdrop-blur-xl border border-black/5 rounded-[32px] p-4 md:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.02)] flex flex-col gap-4">
                         <div className="relative w-full rounded-[24px] overflow-hidden aspect-video bg-black border border-black/5 shadow-inner group">
-                            <video 
-                                ref={videoRef} 
-                                className="w-full h-full object-cover" 
+                            <video
+                                ref={videoRef}
+                                className="w-full h-full object-cover"
                                 src={videoUrl || undefined}
                                 onPlay={() => setIsPlaying(true)}
                                 onPause={() => setIsPlaying(false)}
@@ -107,7 +104,7 @@ export default function Watch() {
                                 }}
                                 onClick={handlePlayPause}
                             />
-                            
+
                             {/* Simple overlay play prompt */}
                             {!isPlaying && (
                                 <div className="absolute inset-0 flex items-center justify-center bg-black/25 cursor-pointer" onClick={handlePlayPause}>
@@ -125,16 +122,16 @@ export default function Watch() {
                                 <span className="font-lettera text-[10px] text-black/50 select-none">
                                     {formatTime(currentTime)}
                                 </span>
-                                <input 
+                                <input
                                     type="range"
                                     min="0"
                                     max="100"
                                     value={progress}
                                     onChange={handleProgressChange}
-                                    className="w-full h-1 bg-black/10 rounded-lg appearance-none cursor-pointer accent-black hover:h-1.5 transition-all"
+                                    className="w-full h-1 bg-black/10 rounded-lg appearance-none cursor-pointer accent-black hover:h-1.5 transition-all ease-in-out"
                                 />
                                 <span className="font-lettera text-[10px] text-black/50 select-none">
-                                    {duration || "00:00"}
+                                    {duration}
                                 </span>
                             </div>
 
@@ -142,7 +139,7 @@ export default function Watch() {
                             <div className="flex items-center justify-between">
                                 <div className="flex gap-2">
                                     {/* Play/Pause Button */}
-                                    <button 
+                                    <button
                                         onClick={handlePlayPause}
                                         className="flex items-center gap-2 px-5 py-2 bg-black text-white hover:bg-black/90 active:scale-95 transition-all rounded-full font-lettera uppercase text-xs tracking-wider cursor-pointer"
                                     >
@@ -162,16 +159,16 @@ export default function Watch() {
 
                                 {/* Volume slider */}
                                 <div className="flex items-center gap-2 bg-black/5 px-3 py-1.5 rounded-full border border-black/5">
-                                    <button 
+                                    <button
                                         onClick={toggleMute}
                                         className="hover:opacity-80 transition-opacity cursor-pointer"
                                     >
                                         <VolumeDoticon className={`w-4 h-4 ${isMuted ? 'text-black/40' : 'text-black'}`} />
                                     </button>
-                                    <input 
-                                        type="range" 
-                                        min="0" 
-                                        max="1" 
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="1"
                                         step="0.05"
                                         value={isMuted ? 0 : volume}
                                         onChange={handleVolumeChange}
@@ -191,11 +188,11 @@ export default function Watch() {
                         <h1 className="font-ntype-headline text-2xl font-bold tracking-tight text-black mb-4 leading-tight">
                             {title || "Untitled Video"}
                         </h1>
-                        
+
                         {/* Specifications Panel (Nothing Style) */}
                         <div className="border border-black/5 rounded-[24px] bg-black/[0.02] p-4 flex flex-col gap-3 font-lettera text-xs text-black/80">
                             <span className="text-[10px] tracking-widest text-black/40 font-bold uppercase border-b border-black/5 pb-2 mb-1">SPECIFICATIONS</span>
-                            
+
                             <div className="flex items-center justify-between py-1 border-b border-black/[0.03]">
                                 <div className="flex items-center gap-2 text-black/50">
                                     <CircleDotsDoticon className="w-3.5 h-3.5" />

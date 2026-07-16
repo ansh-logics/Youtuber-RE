@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { 
-  Home as HomeIcon, 
-  Tv, 
-  Clock, 
+import {
+  Home as HomeIcon,
+  Tv,
+  Clock,
   Play
 } from "lucide-react";
 
@@ -27,7 +27,7 @@ export default function Home() {
 
   useEffect(() => {
     setLoading(true);
-    axios.get("http://localhost:3001/videos").then((response) => {
+    axios.get("http://localhost:3001/video").then((response) => {
       setVideos(response.data.videos || []);
       setLoading(false);
     }).catch((err) => {
@@ -50,7 +50,7 @@ export default function Home() {
 
   return (
     <div className="w-full max-w-6xl mx-auto flex flex-col md:flex-row gap-8 text-left py-4 min-h-[85vh] relative pb-20 md:pb-4">
-        
+
       {/* Desktop Sidebar */}
       <div className="hidden md:flex flex-col gap-5 w-52 shrink-0 select-none">
         <span className="font-lettera uppercase text-[9px] tracking-[0.2em] text-black/35 font-bold px-3">Feed</span>
@@ -63,8 +63,8 @@ export default function Home() {
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center gap-3.5 px-4.5 py-3 rounded-[16px] transition-all cursor-pointer font-lettera uppercase text-[10px] tracking-wider font-bold
-                  ${isActive 
-                    ? "bg-black text-white shadow-sm" 
+                  ${isActive
+                    ? "bg-black text-white shadow-sm"
                     : "text-black/60 hover:bg-black/5 hover:text-black"
                   }
                 `}
@@ -101,7 +101,7 @@ export default function Home() {
 
       {/* Main Video Feed Column */}
       <div className="flex-1 flex flex-col gap-6">
-        
+
         {/* Feed Title / Stats Header */}
         <div className="flex items-end justify-between border-b border-black/5 pb-3">
           <div className="flex flex-col gap-1">
@@ -109,10 +109,10 @@ export default function Home() {
               {activeTab === "home" ? "Home Feed" : activeTab === "subscriptions" ? "Subscriptions" : "Watch History"}
             </h1>
             <p className="font-lettera uppercase text-[9px] tracking-widest text-black/40 font-bold">
-              {activeTab === "home" 
-                ? "Discover creative video updates" 
-                : activeTab === "subscriptions" 
-                  ? "Updates from channels you follow" 
+              {activeTab === "home"
+                ? "Discover creative video updates"
+                : activeTab === "subscriptions"
+                  ? "Updates from channels you follow"
                   : "Keep track of your view activity"
               }
             </p>
@@ -148,7 +148,7 @@ export default function Home() {
             /* Video Cards Grid */
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {videos.map((video) => (
-                <div 
+                <div
                   key={video.id}
                   onClick={() => navigate(`/watch?v=${video.slug}`)}
                   className="group rounded-[24px] border border-black/5 bg-white/35 hover:bg-white/50 backdrop-blur-md p-4 transition-all duration-300 shadow-[0_8px_30px_rgba(0,0,0,0.01)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.03)] cursor-pointer flex flex-col gap-3"
@@ -156,10 +156,10 @@ export default function Home() {
                   {/* Thumbnail Wrapper */}
                   <div className="aspect-video rounded-[18px] bg-black/5 overflow-hidden relative border border-black/5 flex items-center justify-center">
                     {video.thumbnailUrl ? (
-                      <img 
-                        src={video.thumbnailUrl} 
-                        alt={video.title} 
-                        className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500" 
+                      <img
+                        src={video.thumbnailUrl}
+                        alt={video.title}
+                        className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500"
                       />
                     ) : (
                       <div className="w-full h-full bg-black/5 flex items-center justify-center group-hover:scale-102 transition-transform duration-500">
