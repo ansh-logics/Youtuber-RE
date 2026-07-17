@@ -2,7 +2,6 @@ import { Router } from "express";
 import { prisma } from "../db"
 import { authMiddleware } from "../middlewares/authMiddleware";
 
-
 const router = Router();
 router.get("/profile", authMiddleware, async (req, res) => {
     let id = (req as any).user.id;
@@ -32,7 +31,7 @@ router.get("/profile", authMiddleware, async (req, res) => {
 });
 router.patch("/profile", authMiddleware, async (req, res) => {
     const id = (req as any).user.id;
-    const { channelName, discription, banner, profilePicture } = req.body;
+    const { channelName, description, banner, profilePicture } = req.body;
 
     let updates: {
         channelName?: string | undefined;
@@ -41,25 +40,24 @@ router.patch("/profile", authMiddleware, async (req, res) => {
         profilePicture?: string | undefined;
     } = {};
 
-    if (channelName !== undefined && channelName.trim.length !== 0) {
+    if (channelName !== undefined && channelName.trim() != 0) {
         updates.channelName = channelName.trim();
     }
-    if (discription !== undefined && discription.trim.length !== 0) {
-        updates.channelName == channelName.trim();
+    if (description !== undefined && description.trim() != 0) {
+        updates.description = description.trim();
     }
-    if (banner !== undefined) {
+    if (banner !== undefined && banner != null) {
         updates.banner = banner;
     }
-    if (profilePicture !== undefined) {
-        updates.profilePicture == profilePicture;
-    }
-
-    if (Object.keys(updates).length == 0) {
-        return res.status(400).json({
-            message: "Provied atleast one field to update",
-        })
+    if (profilePicture !== undefined && banner != null) {
+        updates.profilePicture = profilePicture;
     }
     try {
+        if (Object.keys(updates).length == 0) {
+            return res.status(400).json({
+                message: "Provied atleast one field to update",
+            })
+        }
         const updatedUser = await prisma.user.update({
             where: {
                 id: id
@@ -84,6 +82,7 @@ router.patch("/profile", authMiddleware, async (req, res) => {
             message: "User can't be updated",
         })
     }
+
 
 })
 export default router;
