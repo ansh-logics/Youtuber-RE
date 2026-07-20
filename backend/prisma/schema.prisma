@@ -46,6 +46,8 @@ model History {
 
   viewer User    @relation("userWatched", fields: [userId], references: [id], onDelete: Cascade)
   video  Uploads @relation("viewedVideo", fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, videoId])
 }
 
 model Subscription {
