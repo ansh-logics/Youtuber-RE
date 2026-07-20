@@ -75,6 +75,9 @@ router.delete("/:videoId/like", authMiddleware, async (req, res) => {
 
     }
 });
+router.post("/:videoId/watch", authMiddleware, async (req, res) => {
+
+});
 
 
 export default router;

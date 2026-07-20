@@ -35,6 +35,17 @@ model User {
   subscriptions Subscription[] @relation("UserSubscriptions")
   subscribers   Subscription[] @relation("ChannelSubscribers")
   liked         Like[]         @relation("UserLikes")
+  watchedVideos History[]      @relation("userWatched")
+}
+
+model History {
+  id        String   @id @default(uuid())
+  userId    String
+  videoId   String
+  createdAt DateTime @default(now())
+
+  viewer User    @relation("userWatched", fields: [userId], references: [id], onDelete: Cascade)
+  video  Uploads @relation("viewedVideo", fields: [videoId], references: [id], onDelete: Cascade)
 }
 
 model Subscription {
@@ -84,7 +95,8 @@ model Uploads {
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
-  likedBy Like[] @relation("LikedBy")
+  likedBy  Like[]    @relation("LikedBy")
+  viewedBy History[] @relation("viewedVideo")
 }
 
 enum Gender {
