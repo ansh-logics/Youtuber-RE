@@ -50,6 +50,17 @@ model History {
   @@unique([userId, videoId])
 }
 
+model UnauthenticatedViewsRegistry {
+  id        String   @id @default(uuid())
+  sessionId String
+  videoId   String
+  createdAt DateTime @default(now())
+  video     Uploads  @relation("anonymousView", fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, videoId])
+  @@index([videoId])
+}
+
 model Subscription {
   id           String   @id @default(uuid())
   channelId    String
@@ -97,8 +108,9 @@ model Uploads {
   userId String
   user   User   @relation(fields: [userId], references: [id])
 
-  likedBy  Like[]    @relation("LikedBy")
-  viewedBy History[] @relation("viewedVideo")
+  likedBy       Like[]                         @relation("LikedBy")
+  viewedBy      History[]                      @relation("viewedVideo")
+  anonymousView UnauthenticatedViewsRegistry[] @relation("anonymousView")
 }
 
 enum Gender {

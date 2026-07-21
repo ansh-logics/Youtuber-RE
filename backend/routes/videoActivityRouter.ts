@@ -2,6 +2,8 @@ import { Router } from "express";
 import { prisma } from "../db";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { Prisma } from "../generated/prisma/client";
+import { optionalAuthMiddleware } from "../middlewares/optionalAuthMiddleware";
+import anonymousViewer from "../middlewares/anonymousViewer";
 
 const router = Router();
 
@@ -76,42 +78,113 @@ router.delete("/:videoId/like", authMiddleware, async (req, res) => {
 
     }
 });
-router.post("/:videoId/watch", authMiddleware, async (req, res) => {
+router.post("/:videoId/watch", optionalAuthMiddleware, anonymousViewer, async (req, res) => {
     const date = new Date();
-    console.log(1)
-    const userId = (req as any).user.id;
-    console.log(2)
-    const videoId = req.params.videoId as string;
-    console.log(3)
-    const lastWatched = await prisma.history.findFirst({
-        where: {
-            userId, videoId
-        },
-        select: {
-            createdAt: true
+    const viewerKeyData = (req as any).viewerKey.split(" ");
+    if (viewerKeyData[0] == "user:") {
+        const userId = viewerKeyData[1];
+        const videoId = req.params.videoId as string;
+        const lastWatched = await prisma.history.findFirst({
+            where: {
+                userId, videoId
+            },
+            select: {
+                createdAt: true
+            }
+        })
+        const currentDate = date.toISOString().slice(0, 10);
+        const dbDate = lastWatched
+            ? lastWatched.createdAt.toISOString().slice(0, 10)
+            : null;
+        if (lastWatched) {
+            if (currentDate == dbDate) {
+                return res.status(403).json({
+                    message: "View not registered"
+                })
+            }
+            try {
+                await prisma.$transaction(async (tx) => {
+                    await tx.history.update({
+                        where: {
+                            userId_videoId: {
+                                userId,
+                                videoId
+                            }
+                        },
+                        data: {
+                            createdAt: date
+                        }
+                    })
+                    await tx.uploads.update({
+                        where: {
+                            id: videoId
+                        },
+                        data: {
+                            views: { increment: 1 }
+                        }
+                    })
+                })
+                return res.status(200).json({
+                    message: "Successfully registered"
+                })
+            } catch (error) {
+                console.log(error);
+                return res.status(500).json({
+                    message: "Something went wrong"
+                })
+            }
         }
-    })
-    console.log(4)
-    const currentDate = date.toISOString().slice(0, 10);
-    console.log(5)
-    const dbDate = lastWatched
-        ? lastWatched.createdAt.toISOString().slice(0, 10)
-        : null;
-    console.log(6)
-    if (lastWatched) {
-        console.log(7)
-        if (currentDate == dbDate) {
-            return res.status(403).json({
-                message: "View not registered"
-            })
-        }
-        console.log(8);
         try {
             await prisma.$transaction(async (tx) => {
-                await tx.history.update({
+                await tx.history.create({
+                    data: {
+                        userId,
+                        videoId
+                    }
+                })
+
+                await tx.uploads.update({
                     where: {
-                        userId_videoId: {
-                            userId,
+                        id: videoId
+                    },
+                    data: {
+                        views: { increment: 1 }
+                    }
+                })
+            })
+            return res.status(200).json({
+                message: "View is registered"
+            })
+        } catch (error) {
+            return res.status(500).json({ message: "something went wrong" })
+        }
+    } else {
+        const sessionId = viewerKeyData[1];
+        const videoId = req.params.videoId as string;
+
+        const sessionHistoryExists = await prisma.unauthenticatedViewsRegistry.findFirst({
+            where: {
+                sessionId, videoId
+            }, select: {
+                createdAt: true
+            }
+        })
+        const currentDate = date.toISOString().slice(0, 10);
+        const dbDate = sessionHistoryExists
+            ? sessionHistoryExists.createdAt.toISOString().slice(0, 10)
+            : null;
+
+        if (sessionHistoryExists) {
+            if (currentDate == dbDate) {
+                return res.status(200).json({
+                    message: "View not registered"
+                })
+            }
+            await prisma.$transaction(async (tx) => {
+                await tx.unauthenticatedViewsRegistry.update({
+                    where: {
+                        sessionId_videoId: {
+                            sessionId,
                             videoId
                         }
                     },
@@ -129,21 +202,14 @@ router.post("/:videoId/watch", authMiddleware, async (req, res) => {
                 })
             })
             return res.status(200).json({
-                message: "Successfully registered"
-            })
-        } catch (error) {
-            console.log(error);
-            return res.status(500).json({
-                message: "Something went wrong"
+                message: "View is updated"
             })
         }
-    }
-    try {
         await prisma.$transaction(async (tx) => {
-            await tx.history.create({
+            await tx.unauthenticatedViewsRegistry.create({
                 data: {
-                    userId,
-                    videoId
+                    videoId,
+                    sessionId
                 }
             })
 
@@ -157,10 +223,8 @@ router.post("/:videoId/watch", authMiddleware, async (req, res) => {
             })
         })
         return res.status(200).json({
-            message: "View is registered"
+            message: "view registered successfully"
         })
-    } catch (error) {
-        return res.status(500).json({ message: "something went wrong" })
     }
 });
 

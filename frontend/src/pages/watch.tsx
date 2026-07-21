@@ -19,7 +19,7 @@ export default function Watch() {
     const [title, setTitle] = useState<string | null>(null);
     const [description, setDescription] = useState<string | null>(null);
     const [views, setViews] = useState<string | null>(null);
-    const [uploadedAt, setUploadedAt] = useState<string | null>(null);
+    const [uploadedAt, setUploadedAt] = useState<Date | null>(null);
     const [duration, setDuration] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -36,7 +36,7 @@ export default function Watch() {
             setTitle(response.data.video.title);
             setDescription(response.data.video.description);
             setViews(response.data.video.views);
-            setUploadedAt(response.data.video.uploadedAt);
+            setUploadedAt(new Date(response.data.video.createdAt));
         }).catch((err) => {
             console.log(err);
         })
@@ -214,7 +214,7 @@ export default function Watch() {
                                     <GcalendarDoticon className="w-3.5 h-3.5" />
                                     <span className="uppercase tracking-wider">PUBLISHED</span>
                                 </div>
-                                <span className="font-lettera-medium text-black uppercase">{uploadedAt || "N/A"}</span>
+                                <span className="font-lettera-medium text-black uppercase">{`${uploadedAt?.getUTCDate()}|${uploadedAt?.getUTCMonth()}|${uploadedAt?.getFullYear()}` || "N/A"}</span>
                             </div>
                         </div>
                     </div>

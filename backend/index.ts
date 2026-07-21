@@ -7,6 +7,7 @@ import userRouter from "./routes/userRoutes.ts";
 import channelRouter from "./routes/channelRouter.ts";
 import videoRouter from "./routes/videoRoutes.ts";
 import videoActivityRouter from "./routes/videoActivityRouter.ts";
+import cookieParser from "cookie-parser";
 const app = express();
 app.use(
     cors({
@@ -15,6 +16,7 @@ app.use(
     })
 );
 app.use(express.json());
+app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/video", videoRouter);
