@@ -41,7 +41,6 @@ export default async function imageUpload(file: Express.Multer.File) {
       throw new Error(result.error?.message || "Image upload failed");
     }
 
-    console.log("Image Upload Success:", result.secure_url);
     return result;
   } catch (err: any) {
     console.error("Image Upload Error Log:", err);

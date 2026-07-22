@@ -20,7 +20,7 @@ export function optionalAuthMiddleware(req: Request, res: Response, next: NextFu
             (req as any).user = decoded;
             next();
         } catch (err) {
-            console.log(err);
+            console.error(err);
             res.status(403).json({
                 error: "token not varified"
             })

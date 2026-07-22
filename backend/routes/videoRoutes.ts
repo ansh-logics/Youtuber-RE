@@ -4,6 +4,7 @@ import uploadVideo from "../lib/videoUpload";
 import imageUpload from "../lib/imageUpload";
 import { upload } from "../middlewares/uploadMiddleware";
 import { prisma } from "../db";
+import { optionalAuthMiddleware } from "../middlewares/optionalAuthMiddleware";
 
 const router = Router();
 router.post("/video", authMiddleware, upload.single("video"), async (req, res) => {
@@ -107,12 +108,13 @@ router.post("/", authMiddleware, async (req, res) => {
         })
     }).catch((err) => {
         res.status(500).json({ message: "Upload failed" });
-        console.log(err);
+        console.error(err);
     })
 })
 
-router.get("/:slug", async (req, res) => {
-    let slug = req.params.slug;
+router.get("/:slug", optionalAuthMiddleware, async (req, res) => {
+    let userId = (req as any).user?.id;
+    let slug = req.params.slug as any;
     let video = await prisma.uploads.findUnique({
         where: {
             slug: slug
@@ -121,12 +123,18 @@ router.get("/:slug", async (req, res) => {
     if (!video) {
         res.status(404).json({ message: "Video not found" });
     }
-    res.status(200).json({ message: "Video fecthed successfully", video: video });
+    const videoId = video?.id;
+    let like = await prisma.like.findFirst({
+        where: {
+            userId,
+            videoId
+        }
+    })
+    res.status(200).json({ message: "Video fecthed successfully", video: video, like: like });
 })
 
 router.get("/", async (req, res) => {
     let videos = await prisma.uploads.findMany();
-    console.log(videos)
     if (!videos) {
         res.status(404).json({
             message: "No videos found"

@@ -74,7 +74,7 @@ router.delete("/:channelId/unsubscribe", authMiddleware, async (req, res) => {
             subscribed: false,
         })
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return res.status(500).json({
             message: "couldn't unsubscribe",
         })

@@ -68,9 +68,7 @@ export default function Profile() {
       if (response.data.data.banner) {
         setBannerImage(response.data.data.banner);
       }
-      console.log(response);
-    }).catch((err) => {
-      console.log(err);
+    }).catch(() => {
     });
   }, [token]);
 
@@ -84,15 +82,12 @@ export default function Profile() {
     setBio(editBio);
     setIsEditing(false);
     createFormData();
-    console.log(formData);
     axios.patch("http://localhost:3001/user/profile", formData, {
       headers: {
         Authorization: `Bearer ${token}`
       }
-    }).then((response) => {
-      console.log(response.data.updatedUser);
-    }).catch((err) => {
-      console.log(err);
+    }).then(() => {
+    }).catch(() => {
     })
   };
 
@@ -122,8 +117,7 @@ export default function Profile() {
     ).then((response) => {
       setUpdatedProfileImage(response.data.url);
       setProfileImage(response.data.url);
-    }).catch((error) => {
-      console.log(error);
+    }).catch(() => {
     })
   }
 
@@ -146,8 +140,7 @@ export default function Profile() {
     ).then((response) => {
       setUpdatedBannerImage(response.data.url);
       setBannerImage(response.data.url);
-    }).catch((error) => {
-      console.log(error);
+    }).catch(() => {
     })
   }
 

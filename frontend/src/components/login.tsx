@@ -29,8 +29,7 @@ export function Login() {
             let resData = res.data;
             login(resData.token, resData.username);
             navigate("/");
-        }).catch((err) => {
-            console.log(err);
+        }).catch(() => {
         });
     }
 

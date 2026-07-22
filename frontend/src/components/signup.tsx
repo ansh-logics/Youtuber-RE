@@ -34,10 +34,8 @@ export function Signup(){
             lastName:lastName,
             dob: dob
         }
-        axios.post("http://localhost:3001/auth/signup", data).then((res)=>{
-            console.log(res.data);
-        }).catch((err)=>{
-            console.log(err);
+        axios.post("http://localhost:3001/auth/signup", data).then(()=>{
+        }).catch(()=>{
             setVisible(false);
         })
     }

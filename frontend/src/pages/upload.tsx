@@ -107,8 +107,7 @@ export default function Upload() {
                 Authorization:`Bearer ${token}`
             }
         }
-    ).then((res)=>{
-      console.log(res);
+    ).then(()=>{
     }).catch((err)=>{
       setError(err.response?.data?.error || err.response?.data?.message || "Upload failed");
     });
@@ -125,8 +124,7 @@ export default function Upload() {
                 Authorization:`Bearer ${token}`
             }
         }
-    ).then((res)=>{
-      console.log(res);
+    ).then(()=>{
     }).catch((err)=>{
       setError(err.response?.data?.error || err.response?.data?.message || "Upload failed");
     });

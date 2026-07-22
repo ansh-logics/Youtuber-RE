@@ -77,7 +77,7 @@ router.patch("/profile", authMiddleware, async (req, res) => {
             updatedUser: updatedUser
         })
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json({
             message: "User can't be updated",
         })

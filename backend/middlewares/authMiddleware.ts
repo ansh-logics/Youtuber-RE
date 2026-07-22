@@ -24,7 +24,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
         (req as any).user = decoded;
         next();
     } catch (err) {
-        console.log(err);
+        console.error(err);
         res.status(401).json({
             error: "token not varified"
         })

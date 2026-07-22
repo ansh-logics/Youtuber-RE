@@ -11,6 +11,7 @@ import {
     CircleDotsDoticon,
     VolumeDoticon
 } from "doticons/16";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Watch() {
     const [searchParams] = useSearchParams();
@@ -22,6 +23,7 @@ export default function Watch() {
     const [uploadedAt, setUploadedAt] = useState<Date | null>(null);
     const [duration, setDuration] = useState<string | null>(null);
     const videoRef = useRef<HTMLVideoElement | null>(null);
+    const [videoId, setVideoId] = useState<string | null>(null);
 
     // Custom UI player states
     const [isPlaying, setIsPlaying] = useState(false);
@@ -29,6 +31,30 @@ export default function Watch() {
     const [currentTime, setCurrentTime] = useState(0);
     const [volume, setVolume] = useState(1);
     const [isMuted, setIsMuted] = useState(false);
+    const viewRegistered = useRef<boolean>(false);
+    const { token } = useAuth();
+    const counter = useRef<number>(0);
+    const [likeState, setLikeState] = useState<boolean>(false);
+    const likeTimeRef = useRef<NodeJS.Timeout | null>(null);
+
+    const RegisterView = async () => {
+        if (token) {
+            axios.post(`http://localhost:3001/videoActivity/${videoId}/watch`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }).then(() => {
+            }).catch(() => {
+            })
+            return
+        }
+        axios.post(`http://localhost:3001/videoActivity/${videoId}/watch`, {}, {
+            withCredentials: true
+        }).then(() => {
+        }).catch(() => {
+        })
+        return
+    }
 
     useEffect(() => {
         axios.get(`http://localhost:3001/video/${slug}`).then((response) => {
@@ -37,8 +63,12 @@ export default function Watch() {
             setDescription(response.data.video.description);
             setViews(response.data.video.views);
             setUploadedAt(new Date(response.data.video.createdAt));
-        }).catch((err) => {
-            console.log(err);
+            setVideoId(response.data.video.id);
+            if (response.data.like) {
+                setLikeState(true);
+                counter.current = 1;
+            }
+        }).catch(() => {
         })
     }, [slug]);
 
@@ -78,6 +108,38 @@ export default function Watch() {
         const seconds = Math.floor(timeInSeconds % 60);
         return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     };
+    const handleLike = () => {
+        if (likeTimeRef.current) {
+            clearTimeout(likeTimeRef.current);
+        }
+        likeTimeRef.current = setTimeout(() => {
+            if (counter.current % 2 == 0) {
+                axios.delete(`http://localhost:3001/videoActivity/${videoId}/like`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(() => {
+                    return
+                }).catch((error) => {
+                    console.log(error);
+                })
+                likeTimeRef.current = null;
+                return
+            } else {
+                axios.post(`http://localhost:3001/videoActivity/${videoId}/like`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }).then(() => {
+                    return
+                }).catch((error) => {
+                    console.log(error);
+                })
+                likeTimeRef.current = null;
+            }
+        }, 1000)
+
+    }
 
     return (
         <div className="text-left w-full max-w-6xl mx-auto flex flex-col font-grotesk min-h-[80vh] py-4">
@@ -100,6 +162,10 @@ export default function Watch() {
                                     if (video.duration) {
                                         setProgress((video.currentTime / video.duration) * 100);
                                         setCurrentTime(video.currentTime);
+                                    }
+                                    if (video.currentTime > 5 && !viewRegistered.current) {
+                                        RegisterView();
+                                        viewRegistered.current = true;
                                     }
                                 }}
                                 onClick={handlePlayPause}
@@ -225,6 +291,21 @@ export default function Watch() {
                         <div className="max-h-48 overflow-y-auto pr-2 font-grotesk text-sm leading-relaxed text-black/70 scrollbar-thin">
                             {description || "No description provided."}
                         </div>
+                    </div>
+                    <div>
+                        <button>Subscribe</button>
+                        <button onClick={() => {
+                            counter.current += 1;
+                            if (counter.current % 2 == 0) {
+                                setLikeState(false)
+                                handleLike();
+                                return
+                            } else {
+                                setLikeState(true)
+                                handleLike();
+                                return
+                            }
+                        }} >{likeState ? "Liked" : "Like"}</button>
                     </div>
                 </div>
 

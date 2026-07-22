@@ -73,7 +73,7 @@ router.delete("/:videoId/like", authMiddleware, async (req, res) => {
         return res.status(200).json({ message: unliked ? "Unliked Video" : "You haven't liked the video" });
 
     } catch (error) {
-        console.log(error);
+        console.error(error);
         return res.status(500).json({ message: "unable to like the video" });
 
     }
@@ -128,7 +128,7 @@ router.post("/:videoId/watch", optionalAuthMiddleware, anonymousViewer, async (r
                     message: "Successfully registered"
                 })
             } catch (error) {
-                console.log(error);
+                console.error(error);
                 return res.status(500).json({
                     message: "Something went wrong"
                 })

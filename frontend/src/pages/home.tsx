@@ -30,17 +30,10 @@ export default function Home() {
     axios.get("http://localhost:3001/video").then((response) => {
       setVideos(response.data.videos || []);
       setLoading(false);
-    }).catch((err) => {
-      console.log(err);
+    }).catch(() => {
       setLoading(false);
     });
   }, []);
-
-  useEffect(() => {
-    if (!loading) {
-      console.log(videos);
-    }
-  }, [videos, loading]);
 
   const sidebarItems = [
     { id: "home", label: "Home", icon: HomeIcon },
